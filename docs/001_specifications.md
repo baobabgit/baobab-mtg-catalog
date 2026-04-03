@@ -1,9 +1,3 @@
-([Past chat][1])([Past chat][1])([Past chat][1])
-
-Voici un **cahier des charges complet** pour la librairie **baobab-mtg-catalog**, construit à partir de la logique déjà utilisée dans tes autres librairies Baobab, de l’architecture modulaire déjà posée sur le projet MTG, et des contraintes de développement communes déjà établies pour tes projets Python. Les contraintes communes de structure, tests, qualité, documentation, exceptions spécifiques, versioning et workflow Git s’appliquent ici aussi. 
-
----
-
 # Cahier des charges — `baobab-mtg-catalog`
 
 ## 1. Présentation générale
