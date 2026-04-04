@@ -165,6 +165,14 @@ st = Set(
 assert st.natural_key().value == "ONE"
 ```
 
+## Adaptateurs Scryfall (normalisation)
+
+Les objets JSON Scryfall (`Mapping[str, Any]`, typiquement issus de `baobab-scryfall-api-caller` ou d’un parseur JSON) sont convertis en entités domaine sous `baobab_mtg_catalog.adapters` : `ScryfallSetAdapter`, `ScryfallCardDefinitionAdapter`, `ScryfallCardPrintingAdapter`. Les **UUID métier** (`SetId`, `CardDefinitionIdentifier`, `CardPrintingIdentifier`) restent la responsabilité de l’appelant (persistance, résolution idempotente via `natural_key()`).
+
+- `InvalidPayloadError` : structure minimale absente ou types JSON incorrects.
+- `NormalizationError` : valeur Scryfall ambiguë ou incohérente après normalisation.
+- `MappingError` : échec de construction d’un type domaine (cause conservée).
+
 ## Documentation projet
 
 - Spécifications : `docs/001_specifications.md`

@@ -6,6 +6,22 @@ Les entrées sont classées par **date décroissante** (les plus récentes en pr
 
 ## 2026-04-04
 
+### Feature 06 — Adaptateurs de normalisation Scryfall
+
+#### Modifications
+
+- Package `adapters/scryfall` : `ScryfallSetAdapter`, `ScryfallCardDefinitionAdapter`, `ScryfallCardPrintingAdapter` ; modules `scryfall_payload`, `scryfall_normalize`.
+- Exceptions `InvalidPayloadError`, `NormalizationError`, `MappingError` exportées depuis `baobab_mtg_catalog.exceptions` (suffixe `Error` aligné sur le projet ; équivalent aux *Exception* évoquées dans le cahier des charges).
+- Tests sous `tests/.../adapters/scryfall/`.
+- Version **0.6.0**.
+
+#### Décisions d’architecture
+
+- **Isolement** : aucun type du domaine ne référence Scryfall ; seuls les adaptateurs connaissent les noms de champs JSON.
+- **Identifiants métier** : toujours injectés depuis l’extérieur pour préparer l’import idempotent (résolution par `natural_key()` puis réutilisation des UUID persistés).
+- **Multi-face** : si `card_faces` est une liste non vide, elle est la source des `CardFace` ; sinon la racine carte est traitée comme face unique.
+- **Erreurs** : `InvalidPayloadError` / `NormalizationError` ne sont pas enveloppées par `MappingError` ; ce dernier encapsule les autres `BaobabMtgCatalogException` lors du mapping vers valeur / entité.
+
 ### Feature 05 — Modèle domaine `CardPrinting`
 
 #### Modifications

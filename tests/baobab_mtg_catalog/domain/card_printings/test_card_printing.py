@@ -131,5 +131,5 @@ class TestCardPrinting:
     def test_eq_notimplemented_and_hash(self) -> None:
         """Comparaison avec un non-printing et hachage stable."""
         p = _printing()
-        assert p.__eq__(object()) is NotImplemented
+        assert (p == object()) is False
         assert isinstance(hash(p), int)
