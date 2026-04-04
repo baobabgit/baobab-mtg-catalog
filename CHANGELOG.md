@@ -5,6 +5,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.6.0] - 2026-04-04
+
+### Added
+
+- Couche `adapters/scryfall` : `ScryfallSetAdapter`, `ScryfallCardDefinitionAdapter`, `ScryfallCardPrintingAdapter` (payloads JSON `Mapping` → entités domaine).
+- Modules `scryfall_payload`, `scryfall_normalize` (validation minimale, alias `set_type` / langue / rareté, CMC, finitions, URIs).
+- Exceptions `InvalidPayloadError`, `NormalizationError`, `MappingError` (sous `BaobabMtgCatalogException`).
+- Tests unitaires adaptateurs sous `tests/.../adapters/scryfall/`.
+
 ## [0.5.0] - 2026-04-04
 
 ### Added

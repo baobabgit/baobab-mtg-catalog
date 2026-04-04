@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "baobab-mtg-catalog"
-version = "0.5.0"
+version = "0.6.0"
 description = "Référentiel catalogue Magic: The Gathering — modèle métier local, normalisé et consultable (cartes, printings, sets, métadonnées)."
 readme = "README.md"
 requires-python = ">=3.11"

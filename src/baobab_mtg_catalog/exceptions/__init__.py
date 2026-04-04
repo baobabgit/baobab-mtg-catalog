@@ -41,6 +41,7 @@ from baobab_mtg_catalog.exceptions.invalid_mana_cost_error import InvalidManaCos
 from baobab_mtg_catalog.exceptions.invalid_multiverse_id_error import (
     InvalidMultiverseIdError,
 )
+from baobab_mtg_catalog.exceptions.invalid_payload_error import InvalidPayloadError
 from baobab_mtg_catalog.exceptions.invalid_oracle_id_error import InvalidOracleIdError
 from baobab_mtg_catalog.exceptions.invalid_rarity_error import InvalidRarityError
 from baobab_mtg_catalog.exceptions.invalid_scryfall_id_error import InvalidScryfallIdError
@@ -48,6 +49,8 @@ from baobab_mtg_catalog.exceptions.invalid_set_code_error import InvalidSetCodeE
 from baobab_mtg_catalog.exceptions.invalid_set_error import InvalidSetError
 from baobab_mtg_catalog.exceptions.invalid_set_id_error import InvalidSetIdError
 from baobab_mtg_catalog.exceptions.invalid_set_type_error import InvalidSetTypeError
+from baobab_mtg_catalog.exceptions.mapping_error import MappingError
+from baobab_mtg_catalog.exceptions.normalization_error import NormalizationError
 
 __all__: list[str] = [
     "BaobabMtgCatalogException",
@@ -68,10 +71,13 @@ __all__: list[str] = [
     "InvalidManaCostError",
     "InvalidMultiverseIdError",
     "InvalidOracleIdError",
+    "InvalidPayloadError",
     "InvalidRarityError",
     "InvalidScryfallIdError",
     "InvalidSetCodeError",
     "InvalidSetError",
     "InvalidSetIdError",
     "InvalidSetTypeError",
+    "MappingError",
+    "NormalizationError",
 ]
