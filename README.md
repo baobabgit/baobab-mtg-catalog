@@ -40,11 +40,36 @@ La couverture est mesurée avec seuil minimal **90 %** ; les artefacts sont gén
 ## Utilisation minimale
 
 ```python
-from baobab_mtg_catalog import BaobabMtgCatalogException, __version__
+from baobab_mtg_catalog import BaobabMtgCatalogException, MtgCatalogFacade, __version__
 
 print(__version__)
 
+facade = MtgCatalogFacade.in_memory()
+# facade.import_set_and_cards(set_payload, card_payloads)
+# facade.sets.get_by_code(...), facade.definitions.get_by_oracle_id(...), etc.
+
 raise BaobabMtgCatalogException("exemple d'erreur métier catalogue")
+```
+
+## Façade catalogue (`MtgCatalogFacade`)
+
+Point d’entrée stable pour les autres briques Baobab : import idempotent, consultation par entité et accès aux filtres combinés sans assembler manuellement repositories et services.
+
+- **`MtgCatalogFacade.in_memory()`** : repositories in-memory vides, prêts pour tests ou prototypage.
+- **Injection** : `MtgCatalogFacade(set_repository=..., definition_repository=..., printing_repository=...)` pour brancher une persistance partagée.
+- **`sets` / `definitions` / `printings`** : `SetQueryService`, `CardDefinitionQueryService`, `CardPrintingQueryService` (get, listes par set ou par carte logique, `find` / `find_in_set` pour les critères métier).
+- **`catalog`** : `CatalogQueryService` inchangé (filtres `Catalog*Filter`).
+- **`importer`** : `CatalogImportService` ; **`import_set_and_cards`** sur la façade est un raccourci équivalent.
+
+```python
+from baobab_mtg_catalog import MtgCatalogFacade
+from baobab_mtg_catalog.domain import SetCode
+
+facade = MtgCatalogFacade.in_memory()
+# Importer des Mapping JSON Scryfall via facade.import_set_and_cards(...)
+st = facade.sets.get_by_code(SetCode.parse("lea"))
+defs = facade.definitions.list_for_set(st.set_id)
+prints = facade.printings.list_for_set(st.set_id)
 ```
 
 ## Objets de valeur du domaine
