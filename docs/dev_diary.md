@@ -6,6 +6,20 @@ Les entrées sont classées par **date décroissante** (les plus récentes en pr
 
 ## 2026-04-04
 
+### Feature 10 — Services de consultation et façade publique
+
+#### Modifications
+
+- `SetQueryService`, `CardDefinitionQueryService`, `CardPrintingQueryService` ; `MtgCatalogFacade` sous `facades/` ; export `MtgCatalogFacade` depuis `baobab_mtg_catalog.__init__`.
+- Tests `test_mtg_catalog_facade.py`, services associés, `conftest.py` avec fixture `lea_catalog_facade`.
+- Version **0.10.0**.
+
+#### Décisions d'architecture
+
+- **Rôle des services par entité** : exposer les cas d'usage métier (get, listes dérivées) au-dessus des repositories ; les recherches par fragment de nom ou filtres combinés réutilisent `CatalogQueryService` pour éviter la duplication de prédicats.
+- **Façade** : assemble repositories + import + requêtes sans fuiter les implémentations in-memory obligatoires ; `in_memory()` est une commodité, l'injection reste le mode principal pour l'intégration Baobab.
+- **`CardPrintingQueryService.find_in_set`** : `dataclasses.replace` sur `CatalogPrintingFilter` pour fixer le `set_id` et neutraliser `set_code`, garantissant une portée d'extension non ambiguë.
+
 ### Feature 09 — Consultation et filtres catalogue
 
 #### Modifications

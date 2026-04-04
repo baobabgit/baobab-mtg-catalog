@@ -5,6 +5,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.10.0] - 2026-04-04
+
+### Added
+
+- Services de consultation par entité : `SetQueryService`, `CardDefinitionQueryService`, `CardPrintingQueryService` (délégation repository + filtres catalogue partagés).
+- Façade publique `MtgCatalogFacade` (`in_memory()` ou injection de repositories) : propriétés `sets`, `definitions`, `printings`, `catalog`, `importer` et raccourci `import_set_and_cards`.
+- Export racine du package : `from baobab_mtg_catalog import MtgCatalogFacade`.
+- Tests façade et services ; fixture pytest `lea_catalog_facade` (`tests/baobab_mtg_catalog/conftest.py`).
+
 ## [0.9.0] - 2026-04-04
 
 ### Added
