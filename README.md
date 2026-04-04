@@ -47,6 +47,21 @@ print(__version__)
 raise BaobabMtgCatalogException("exemple d'erreur métier catalogue")
 ```
 
+## Objets de valeur du domaine
+
+Les types partagés (couleurs, langue, rareté, finition, codes set / collector, coût de mana, ligne de types, identifiants externes, légalité de format) vivent sous `baobab_mtg_catalog.domain` et `baobab_mtg_catalog.domain.value_objects`. Ils sont **indépendants des DTO Scryfall** : les adaptateurs doivent parser puis construire ces types.
+
+```python
+from baobab_mtg_catalog.domain import Color, ColorIdentity, ManaCost, SetCode
+
+blue = Color.parse("u")
+identity = ColorIdentity.from_iterable([Color.GREEN, Color.BLUE])
+cost = ManaCost.parse("{2}{G}")
+code = SetCode.parse("mh3")
+```
+
+Les erreurs de validation lèvent des sous-classes de `InvalidDomainValueError` (elle-même sous-classe de `BaobabMtgCatalogException`), par exemple `InvalidManaCostError`, `InvalidSetCodeError`.
+
 ## Documentation projet
 
 - Spécifications : `docs/001_specifications.md`

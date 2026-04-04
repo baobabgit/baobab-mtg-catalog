@@ -5,6 +5,19 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.2.0] - 2026-04-04
+
+### Added
+
+- Objets de valeur partagés sous `baobab_mtg_catalog.domain.value_objects` : couleurs, identité couleur, langue, rareté, finition, code set, collector number, coût de mana, ligne de types, UUID Scryfall / Oracle, multiverse id, légalité de format.
+- Exceptions de validation `InvalidDomainValueError` et types dérivés par famille de valeur.
+- Utilitaire interne `uuid_canon` pour la normalisation d’UUID.
+- Tests unitaires miroir et réexport public depuis `baobab_mtg_catalog.domain`.
+
+### Changed
+
+- Version catalogue ; configuration flake8 (`per-file-ignores` pour `domain/__init__.py`) et pylint (`SIMILARITIES`).
+
 ## [0.1.0] - 2026-04-04
 
 ### Added
