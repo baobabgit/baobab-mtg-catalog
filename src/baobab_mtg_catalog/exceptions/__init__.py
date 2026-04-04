@@ -3,6 +3,12 @@
 from baobab_mtg_catalog.exceptions.baobab_mtg_catalog_exception import (
     BaobabMtgCatalogException,
 )
+from baobab_mtg_catalog.exceptions.card_definition_not_found_error import (
+    CardDefinitionNotFoundError,
+)
+from baobab_mtg_catalog.exceptions.card_printing_not_found_error import (
+    CardPrintingNotFoundError,
+)
 from baobab_mtg_catalog.exceptions.invalid_card_definition_error import (
     InvalidCardDefinitionError,
 )
@@ -51,9 +57,15 @@ from baobab_mtg_catalog.exceptions.invalid_set_id_error import InvalidSetIdError
 from baobab_mtg_catalog.exceptions.invalid_set_type_error import InvalidSetTypeError
 from baobab_mtg_catalog.exceptions.mapping_error import MappingError
 from baobab_mtg_catalog.exceptions.normalization_error import NormalizationError
+from baobab_mtg_catalog.exceptions.repository_entity_conflict_error import (
+    RepositoryEntityConflictError,
+)
+from baobab_mtg_catalog.exceptions.set_not_found_error import SetNotFoundError
 
 __all__: list[str] = [
     "BaobabMtgCatalogException",
+    "CardDefinitionNotFoundError",
+    "CardPrintingNotFoundError",
     "InvalidCardDefinitionError",
     "InvalidCardDefinitionIdentifierError",
     "InvalidCardFaceError",
@@ -80,4 +92,6 @@ __all__: list[str] = [
     "InvalidSetTypeError",
     "MappingError",
     "NormalizationError",
+    "RepositoryEntityConflictError",
+    "SetNotFoundError",
 ]

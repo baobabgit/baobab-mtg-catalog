@@ -165,6 +165,18 @@ st = Set(
 assert st.natural_key().value == "ONE"
 ```
 
+## Repositories in-memory (référentiel local)
+
+Les contrats de persistance vivent sous `baobab_mtg_catalog.repositories` : `upsert` idempotent par identifiant métier, index sur les clés naturelles (`SetCode`, `OracleId`, `CardPrinting.natural_key()`), lectures simples (`get_by_id`, `get_by_code`, `get_by_oracle_id`, `get_by_scryfall_printing_id`, `list_by_set_id`, etc.) et listes ordonnées de façon déterministe. Les absences lèvent `SetNotFoundError`, `CardDefinitionNotFoundError` ou `CardPrintingNotFoundError` ; les collisions d’unicité lèvent `RepositoryEntityConflictError`.
+
+```python
+from baobab_mtg_catalog.repositories import InMemorySetRepository
+
+repo = InMemorySetRepository()
+repo.upsert(st)
+assert repo.get_by_code(st.code) == st
+```
+
 ## Adaptateurs Scryfall (normalisation)
 
 Les objets JSON Scryfall (`Mapping[str, Any]`, typiquement issus de `baobab-scryfall-api-caller` ou d’un parseur JSON) sont convertis en entités domaine sous `baobab_mtg_catalog.adapters` : `ScryfallSetAdapter`, `ScryfallCardDefinitionAdapter`, `ScryfallCardPrintingAdapter`. Les **UUID métier** (`SetId`, `CardDefinitionIdentifier`, `CardPrintingIdentifier`) restent la responsabilité de l’appelant (persistance, résolution idempotente via `natural_key()`).
