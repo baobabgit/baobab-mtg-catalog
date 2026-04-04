@@ -6,6 +6,21 @@ Les entrées sont classées par **date décroissante** (les plus récentes en pr
 
 ## 2026-04-04
 
+### Feature 08 — Import catalogue idempotent
+
+#### Modifications
+
+- `CatalogImportService` + `CatalogImportBatchResult` ; exceptions d’import sous `CatalogImportInconsistencyError`.
+- Tests services (intégration interne avec repositories in-memory).
+- Version **0.8.0**.
+
+#### Décisions d’architecture
+
+- **Sans réseau** : uniquement des `Mapping[str, Any]` déjà disponibles ; délégation aux adaptateurs existants pour la normalisation.
+- **Matching** : set par `SetCode` ; définition par `OracleId` ; printing par `id` Scryfall carte si présent, sinon `(SetId, collector_number, language)` comme `CardPrinting.natural_key()`.
+- **Mises à jour** : réimport = reconstruction des entités via adaptateurs puis `upsert` (contenu Oracle / printing / set peut évoluer sans changer les UUID métier résolus).
+- **Garde-fous** : même code set avec deux `scryfall_set_id` non nuls différents → erreur ; champ `set` de la carte ≠ set du lot → erreur ; printing existant sur la même clé avec autre définition ou autre set → erreur.
+
 ### Feature 07 — Repositories in-memory du référentiel
 
 #### Modifications

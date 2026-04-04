@@ -165,6 +165,27 @@ st = Set(
 assert st.natural_key().value == "ONE"
 ```
 
+## Import catalogue idempotent (Scryfall → référentiel)
+
+Le service `CatalogImportService` (`baobab_mtg_catalog.services`) enchaîne les adaptateurs Scryfall et les repositories : résolution des `SetId` / `CardDefinitionIdentifier` / `CardPrintingIdentifier` par clés naturelles (`SetCode`, `OracleId`, id Scryfall carte ou triplet set/collector/langue), `upsert` systématique et contrôles de cohérence (code set du lot vs champ `set` de la carte, alignement `scryfall_set_id`, lien printing ↔ définition). Aucun appel HTTP : les `Mapping` sont fournis par l’appelant (fichiers, cache, client existant).
+
+```python
+from baobab_mtg_catalog.repositories import (
+    InMemoryCardDefinitionRepository,
+    InMemoryCardPrintingRepository,
+    InMemorySetRepository,
+)
+from baobab_mtg_catalog.services import CatalogImportService
+
+svc = CatalogImportService(
+    set_repository=InMemorySetRepository(),
+    definition_repository=InMemoryCardDefinitionRepository(),
+    printing_repository=InMemoryCardPrintingRepository(),
+)
+# set_payload et card_payloads : objets JSON Scryfall typiques (champs attendus par les adaptateurs).
+result = svc.import_set_and_cards(set_payload, card_payloads)
+```
+
 ## Repositories in-memory (référentiel local)
 
 Les contrats de persistance vivent sous `baobab_mtg_catalog.repositories` : `upsert` idempotent par identifiant métier, index sur les clés naturelles (`SetCode`, `OracleId`, `CardPrinting.natural_key()`), lectures simples (`get_by_id`, `get_by_code`, `get_by_oracle_id`, `get_by_scryfall_printing_id`, `list_by_set_id`, etc.) et listes ordonnées de façon déterministe. Les absences lèvent `SetNotFoundError`, `CardDefinitionNotFoundError` ou `CardPrintingNotFoundError` ; les collisions d’unicité lèvent `RepositoryEntityConflictError`.

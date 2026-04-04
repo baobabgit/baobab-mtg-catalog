@@ -9,6 +9,18 @@ from baobab_mtg_catalog.exceptions.card_definition_not_found_error import (
 from baobab_mtg_catalog.exceptions.card_printing_not_found_error import (
     CardPrintingNotFoundError,
 )
+from baobab_mtg_catalog.exceptions.catalog_import_batch_set_mismatch_error import (
+    CatalogImportBatchSetMismatchError,
+)
+from baobab_mtg_catalog.exceptions.catalog_import_inconsistency_error import (
+    CatalogImportInconsistencyError,
+)
+from baobab_mtg_catalog.exceptions.catalog_import_printing_definition_mismatch_error import (
+    CatalogImportPrintingDefinitionMismatchError,
+)
+from baobab_mtg_catalog.exceptions.catalog_import_set_scryfall_mismatch_error import (
+    CatalogImportSetScryfallMismatchError,
+)
 from baobab_mtg_catalog.exceptions.invalid_card_definition_error import (
     InvalidCardDefinitionError,
 )
@@ -66,6 +78,10 @@ __all__: list[str] = [
     "BaobabMtgCatalogException",
     "CardDefinitionNotFoundError",
     "CardPrintingNotFoundError",
+    "CatalogImportBatchSetMismatchError",
+    "CatalogImportInconsistencyError",
+    "CatalogImportPrintingDefinitionMismatchError",
+    "CatalogImportSetScryfallMismatchError",
     "InvalidCardDefinitionError",
     "InvalidCardDefinitionIdentifierError",
     "InvalidCardFaceError",
