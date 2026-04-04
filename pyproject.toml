@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "baobab-mtg-catalog"
-version = "0.11.0"
+version = "1.0.0"
 description = "Référentiel catalogue Magic: The Gathering — modèle métier local, normalisé et consultable (cartes, printings, sets, métadonnées)."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -12,7 +12,7 @@ license = { text = "Proprietary" }
 authors = [{ name = "Baobab" }]
 keywords = ["mtg", "magic-the-gathering", "catalog", "scryfall", "baobab"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",

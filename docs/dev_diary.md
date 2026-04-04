@@ -6,6 +6,19 @@ Les entrées sont classées par **date décroissante** (les plus récentes en pr
 
 ## 2026-04-04
 
+### Release 1.0.0 — CI, checklist complète, stabilité PyPI
+
+#### Modifications
+
+- Workflow `.github/workflows/ci.yml` : tests matrix 3.11–3.13, lint (black, flake8, mypy, pylint, bandit), job **package** (`python -m build` + `twine check`).
+- Version **1.0.0**, classifier **Production/Stable** ; README badge CI ; `CHANGELOG` ; checklist `v1.0.0_release_readiness_checklist.md` entièrement cochée.
+- `.gitignore` : `dist_check/`.
+
+#### Décisions d'architecture
+
+- **`twine check` comme dry-run publication** : valide wheel/sdist sans secrets PyPI ; l'upload reste manuel selon politique Baobab.
+- **Tag `v1.0.0`** sur le commit de release après merge sur `main`.
+
 ### Feature 11 — Documentation, exemples et readiness v1.0.0
 
 #### Modifications

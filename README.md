@@ -1,5 +1,7 @@
 # baobab-mtg-catalog
 
+[![CI](https://github.com/baobabgit/baobab-mtg-catalog/actions/workflows/ci.yml/badge.svg)](https://github.com/baobabgit/baobab-mtg-catalog/actions/workflows/ci.yml)
+
 Bibliothèque Python de **référentiel catalogue** pour Magic: The Gathering au sein de l’écosystème **Baobab**.
 
 ## Description du projet
@@ -61,6 +63,8 @@ pip install -e ".[dev]"
 ```
 
 ## Tests et qualité
+
+La même chaîne est exécutée sur **GitHub Actions** (push et pull requests sur `main`) : tests avec couverture sur Python 3.11, 3.12 et 3.13, puis contrôles statiques et `twine check` sur les artefacts wheel/sdist.
 
 ```bash
 pytest
