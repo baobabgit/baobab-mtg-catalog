@@ -5,6 +5,13 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.9.0] - 2026-04-04
+
+### Added
+
+- Consultation catalogue : `CatalogQueryService` avec filtres `CatalogSetFilter`, `CatalogDefinitionFilter`, `CatalogPrintingFilter` (ET sur critères non nuls, résultats triés).
+- Tests `test_catalog_query_service.py` et payloads JSON partagés `tests/.../scryfall_json_fixtures.py`.
+
 ## [0.8.0] - 2026-04-04
 
 ### Added

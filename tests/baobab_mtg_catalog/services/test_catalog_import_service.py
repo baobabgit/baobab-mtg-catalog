@@ -42,65 +42,11 @@ from baobab_mtg_catalog.repositories.in_memory.in_memory_set_repository import (
 )
 from baobab_mtg_catalog.services.catalog_import_service import CatalogImportService
 
+from .scryfall_json_fixtures import bear_card_lea, mono_card_lightning_lea, set_payload_lea
 
-def _set_payload(**overrides: object) -> dict[str, object]:
-    base: dict[str, object] = {
-        "object": "set",
-        "id": "11111111-1111-4111-8111-111111111111",
-        "code": "lea",
-        "name": "Limited Edition Alpha",
-        "set_type": "core",
-        "released_at": "1993-08-05",
-        "digital": False,
-        "foil_only": False,
-    }
-    base.update(overrides)
-    return base
-
-
-def _mono_card(**overrides: object) -> dict[str, object]:
-    base: dict[str, object] = {
-        "object": "card",
-        "id": "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
-        "oracle_id": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
-        "name": "Lightning Bolt",
-        "mana_cost": "{R}",
-        "cmc": 1.0,
-        "type_line": "Instant",
-        "oracle_text": "Lightning Bolt deals 3 damage to any target.",
-        "colors": ["R"],
-        "color_identity": ["R"],
-        "lang": "en",
-        "rarity": "common",
-        "finishes": ["nonfoil"],
-        "collector_number": "116",
-        "artist": "Christopher Rush",
-        "set": "lea",
-    }
-    base.update(overrides)
-    return base
-
-
-def _second_card(**overrides: object) -> dict[str, object]:
-    base: dict[str, object] = {
-        "object": "card",
-        "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
-        "oracle_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
-        "name": "Grizzly Bears",
-        "mana_cost": "{1}{G}",
-        "cmc": 2.0,
-        "type_line": "Creature — Bear",
-        "oracle_text": "",
-        "colors": ["G"],
-        "color_identity": ["G"],
-        "lang": "en",
-        "rarity": "common",
-        "finishes": ["nonfoil"],
-        "collector_number": "5",
-        "set": "lea",
-    }
-    base.update(overrides)
-    return base
+_set_payload = set_payload_lea
+_mono_card = mono_card_lightning_lea
+_second_card = bear_card_lea
 
 
 def _stack() -> tuple[
