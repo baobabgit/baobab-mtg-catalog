@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "baobab-mtg-catalog"
-version = "0.1.0"
+version = "0.2.0"
 description = "Référentiel catalogue Magic: The Gathering — modèle métier local, normalisé et consultable (cartes, printings, sets, métadonnées)."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -115,9 +115,15 @@ disable = [
 max-args = 8
 max-attributes = 12
 
+[tool.pylint.SIMILARITIES]
+min-similarity-lines = 14
+
 [tool.flake8]
 max-line-length = 100
 extend-ignore = ["E203", "W503"]
+per-file-ignores = [
+    "src/baobab_mtg_catalog/domain/__init__.py:F401,F403",
+]
 exclude = [
     ".git",
     ".venv",
