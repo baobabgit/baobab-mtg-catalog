@@ -165,6 +165,22 @@ st = Set(
 assert st.natural_key().value == "ONE"
 ```
 
+## Consultation filtrée (requêtes métier)
+
+`CatalogQueryService` (`baobab_mtg_catalog.services`) parcourt les repositories (typiquement in-memory) et applique des filtres immuables : `CatalogSetFilter`, `CatalogDefinitionFilter`, `CatalogPrintingFilter`. Les critères renseignés sont combinés par un **ET** ; les sous-chaînes (`name_contains`, `type_line_contains`, etc.) ignorent la casse après normalisation. Les impressions peuvent restreindre la définition liée via `CatalogPrintingFilter.definition`. La légalité de format n’est pas portée par `CardDefinition` : aucun filtre de légalité n’est proposé.
+
+```python
+from baobab_mtg_catalog.services import (
+    CatalogDefinitionFilter,
+    CatalogPrintingFilter,
+    CatalogQueryService,
+    CatalogSetFilter,
+)
+
+# q = CatalogQueryService(set_repository=..., definition_repository=..., printing_repository=...)
+# q.find_printings(CatalogPrintingFilter(set_code=..., definition=CatalogDefinitionFilter(...)))
+```
+
 ## Import catalogue idempotent (Scryfall → référentiel)
 
 Le service `CatalogImportService` (`baobab_mtg_catalog.services`) enchaîne les adaptateurs Scryfall et les repositories : résolution des `SetId` / `CardDefinitionIdentifier` / `CardPrintingIdentifier` par clés naturelles (`SetCode`, `OracleId`, id Scryfall carte ou triplet set/collector/langue), `upsert` systématique et contrôles de cohérence (code set du lot vs champ `set` de la carte, alignement `scryfall_set_id`, lien printing ↔ définition). Aucun appel HTTP : les `Mapping` sont fournis par l’appelant (fichiers, cache, client existant).

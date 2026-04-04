@@ -6,6 +6,21 @@ Les entrées sont classées par **date décroissante** (les plus récentes en pr
 
 ## 2026-04-04
 
+### Feature 09 — Consultation et filtres catalogue
+
+#### Modifications
+
+- `CatalogQueryService`, `CatalogSetFilter`, `CatalogDefinitionFilter`, `CatalogPrintingFilter` ; exports dans `services/__init__.py`.
+- Tests et `scryfall_json_fixtures.py` (refactor des tests d’import pour mutualiser les payloads).
+- Version **0.9.0**.
+
+#### Décisions d’architecture
+
+- **Séparation** : les repositories restent des accès simples ; la composition définition + printing et les prédicats métier vivent dans le service de requête.
+- **Pas de moteur SQL** : parcours des listes exposées par les repositories, avec réductions (`list_by_set_id` / `list_by_set_and_collector`) lorsque le filtre le permet.
+- **Combinaisons** : ET strict sur les champs non ``None`` ; ``any_of_colors`` = intersection non vide avec les couleurs de la carte ; ``color_identity_within`` = sous-ensemble de l’identité deck.
+- **Légalité** : absente du modèle `CardDefinition` → hors périmètre de cette feature.
+
 ### Feature 08 — Import catalogue idempotent
 
 #### Modifications
