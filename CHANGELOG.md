@@ -5,6 +5,17 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [1.0.0] - 2026-04-04
+
+### Added
+
+- CI GitHub Actions (`.github/workflows/ci.yml`) : tests sur Python 3.11–3.13, black / flake8 / mypy / pylint / bandit, build wheel+sdist et `twine check` (validation publication sans upload).
+
+### Changed
+
+- Version stable **1.0.0** ; classifier PyPI `Development Status :: 5 - Production/Stable`.
+- Checklist release `docs/v1.0.0_release_readiness_checklist.md` : critères validés pour audit GO v1.0.0.
+
 ## [0.11.0] - 2026-04-04
 
 ### Added

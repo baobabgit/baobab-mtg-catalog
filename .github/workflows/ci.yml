@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package and dev tools
+        run: pip install -e ".[dev]"
+      - name: Run tests with coverage
+        run: pytest
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install package and dev tools
+        run: pip install -e ".[dev]"
+      - name: black
+        run: black --check src tests
+      - name: flake8
+        run: flake8 src tests
+      - name: mypy
+        run: mypy src
+      - name: pylint
+        env:
+          PYTHONPATH: src
+        run: pylint src/baobab_mtg_catalog tests/baobab_mtg_catalog --rcfile=pyproject.toml
+      - name: bandit
+        run: bandit -r src/baobab_mtg_catalog -q
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Build wheel and sdist
+        run: pip install build twine && python -m build
+      - name: Twine check (validation métadonnées, sans upload)
+        run: twine check dist/*
