@@ -1,7 +1,8 @@
 """Package public API for ``baobab_mtg_catalog``.
 
 Expose la version du distribution package, l'exception racine du projet et la
-façade catalogue de haut niveau.
+façade catalogue de haut niveau. L'API détaillée par couche (domaine,
+repositories, adaptateurs, services) est documentée dans le README du projet.
 """
 
 from importlib.metadata import PackageNotFoundError, version
