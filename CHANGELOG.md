@@ -5,6 +5,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.4.0] - 2026-04-04
+
+### Added
+
+- Entité domaine `CardDefinition` (`domain/card_definitions`) : carte logique Oracle, distincte de toute impression.
+- `CardFace` (face texte / jeu), `CardDefinitionIdentifier` (UUID métier), utilitaires de validation partagés.
+- Exceptions `InvalidCardDefinitionError`, `InvalidCardFaceError`, `InvalidCardDefinitionIdentifierError`.
+- Réexport `CardDefinition`, `CardFace`, `CardDefinitionIdentifier` depuis `baobab_mtg_catalog.domain`.
+
 ## [0.3.0] - 2026-04-04
 
 ### Added

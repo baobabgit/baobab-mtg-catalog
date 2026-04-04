@@ -6,6 +6,24 @@ Les entrées sont classées par **date décroissante** (les plus récentes en pr
 
 ## 2026-04-04
 
+### Feature 04 — Modèle domaine `CardDefinition`
+
+#### Modifications
+
+- Package `domain/card_definitions` : `CardDefinition`, `CardFace`, `CardDefinitionIdentifier`, `validation_utils`.
+- Exceptions `InvalidCardDefinitionError`, `InvalidCardFaceError`, `InvalidCardDefinitionIdentifierError`.
+- Réexport depuis `baobab_mtg_catalog.domain`.
+- Tests miroir sous `tests/.../domain/card_definitions/`.
+- Version **0.4.0**.
+
+#### Décisions d’architecture
+
+- **Identité d’entité** : `__eq__` / `__hash__` sur `CardDefinitionIdentifier` (UUID métier persistance).
+- **Idempotence / même carte Oracle** : `natural_key()` et `same_logical_card_as()` s’appuient sur `OracleId` ; les ids Scryfall / Multiverse restent optionnels pour les adaptateurs.
+- **Mono-face** : alignement obligatoire entre champs agrégés carte et l’unique `CardFace` (y compris P/T / loyauté).
+- **Multi-face** : `power` / `toughness` / `loyalty` au niveau carte interdits (portés par chaque face) ; `mana_cost` carte = celui de la première face.
+- **Couleurs** : `Color` est un `StrEnum` ; une chaîne égale à une valeur d’enum n’est pas un second membre dans un `frozenset` — les tests rejettent explicitement un type non `Color` (ex. `object()`).
+
 ### Feature 03 — Modèle domaine `Set`
 
 #### Modifications

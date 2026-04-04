@@ -62,6 +62,52 @@ code = SetCode.parse("mh3")
 
 Les erreurs de validation lèvent des sous-classes de `InvalidDomainValueError` (elle-même sous-classe de `BaobabMtgCatalogException`), par exemple `InvalidManaCostError`, `InvalidSetCodeError`.
 
+## Entité `CardDefinition` (carte logique)
+
+La **carte Oracle** (indépendante d’une impression précise) est modélisée par `CardDefinition` avec des `CardFace` (mono ou multi-face). L’**identité objet** repose sur `CardDefinitionIdentifier` ; la **clé naturelle** pour fusionner un import est `OracleId` (`natural_key()`). Aucun attribut de printing (set, collector number, finition, langue) n’appartient à ce modèle.
+
+```python
+from baobab_mtg_catalog.domain import (
+    CardDefinition,
+    CardDefinitionIdentifier,
+    CardFace,
+    CardTypeLine,
+    Color,
+    ColorIdentity,
+    ManaCost,
+    OracleId,
+)
+
+face = CardFace(
+    name="Elvish Mystic",
+    normalized_name="elvish mystic",
+    mana_cost=ManaCost.parse("{G}"),
+    type_line=CardTypeLine.parse("Creature — Elf Druid"),
+    oracle_text="{T}: Add {G}.",
+    colors=frozenset({Color.GREEN}),
+    power="1",
+    toughness="1",
+)
+card = CardDefinition(
+    card_definition_id=CardDefinitionIdentifier.parse(
+        "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    ),
+    oracle_id=OracleId.parse("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"),
+    name=face.name,
+    normalized_name=face.normalized_name,
+    mana_cost=face.mana_cost,
+    mana_value=1.0,
+    type_line=face.type_line,
+    oracle_text=face.oracle_text,
+    colors=face.colors,
+    color_identity=ColorIdentity.from_iterable([Color.GREEN]),
+    faces=(face,),
+    power=face.power,
+    toughness=face.toughness,
+)
+assert card.natural_key() == card.oracle_id
+```
+
 ## Entité `Set` (extension)
 
 Une extension catalogue est modélisée par `Set` (`baobab_mtg_catalog.domain`). L’**identité objet** repose sur `SetId` (UUID métier) ; la **clé naturelle** pour fusionner un réimport sans doublon est le `SetCode` (`natural_key()`).

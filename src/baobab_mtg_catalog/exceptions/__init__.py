@@ -3,6 +3,13 @@
 from baobab_mtg_catalog.exceptions.baobab_mtg_catalog_exception import (
     BaobabMtgCatalogException,
 )
+from baobab_mtg_catalog.exceptions.invalid_card_definition_error import (
+    InvalidCardDefinitionError,
+)
+from baobab_mtg_catalog.exceptions.invalid_card_definition_identifier_error import (
+    InvalidCardDefinitionIdentifierError,
+)
+from baobab_mtg_catalog.exceptions.invalid_card_face_error import InvalidCardFaceError
 from baobab_mtg_catalog.exceptions.invalid_card_type_line_error import (
     InvalidCardTypeLineError,
 )
@@ -38,6 +45,9 @@ from baobab_mtg_catalog.exceptions.invalid_set_type_error import InvalidSetTypeE
 
 __all__: list[str] = [
     "BaobabMtgCatalogException",
+    "InvalidCardDefinitionError",
+    "InvalidCardDefinitionIdentifierError",
+    "InvalidCardFaceError",
     "InvalidCardTypeLineError",
     "InvalidCollectorNumberError",
     "InvalidColorError",
