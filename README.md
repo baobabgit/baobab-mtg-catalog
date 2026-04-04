@@ -1,18 +1,54 @@
 # baobab-mtg-catalog
 
-Bibliothèque Python de **référentiel catalogue** pour Magic: The Gathering au sein de l’écosystème Baobab.
+Bibliothèque Python de **référentiel catalogue** pour Magic: The Gathering au sein de l’écosystème **Baobab**.
 
-Elle modélise de façon stable et normalisée les données de référence du jeu (cartes, printings, sets, éditions, finitions, langues, raretés et métadonnées utiles au domaine). Elle constitue la **source de vérité métier locale** sur ce qu’est une carte et sur la manière dont une même carte peut exister sous plusieurs impressions.
+## Description du projet
+
+Le package modélise de façon **stable**, **normalisée** et **exploitable** les données de référence du jeu : cartes logiques (Oracle), impressions dans un set, extensions, finitions, langues, raretés et métadonnées utiles au domaine. Il constitue la **source de vérité métier locale** sur ce qu’est une carte et sur la manière dont une même carte peut exister sous plusieurs printings.
+
+## Rôle dans l’écosystème Baobab
+
+- **Consommateurs typiques** : briques qui ont besoin d’un catalogue MTG partagé (applications métier, synchronisation de données, outils internes) **sans** réimplémenter la normalisation Scryfall ni le modèle domaine.
+- **Positionnement** : couche **librairie** (pas de serveur HTTP imposé, pas d’UI). Les appels réseau vers Scryfall restent de la responsabilité de l’appelant ou de `baobab-scryfall-api-caller` ; ce package accepte des `Mapping` JSON déjà obtenus.
+- **Contrat** : entités immuables, exceptions hiérarchisées sous `BaobabMtgCatalogException`, persistance abstraite derrière des repositories.
 
 ## Périmètre explicite
 
-- **Inclus** : catalogue de référence, normalisation Scryfall → modèle métier, import idempotent, consultation filtrable via services / façades.
-- **Exclu** : possession / inventaire, produits scellés, règles de jeu, construction de deck, interface utilisateur, protocole HTTP.
+- **Inclus** : catalogue de référence, normalisation Scryfall → modèle métier, **import idempotent**, consultation par façade et services, **filtres métier** combinés (`CatalogQueryService` + `Catalog*Filter`).
+- **Exclu** : possession / inventaire, produits scellés, règles de jeu, construction de deck, interface utilisateur, transport HTTP **métier** (aucun framework web imposé).
 
 ## Dépendances
 
-- **Autorisée (métier)** : [`baobab-scryfall-api-caller`](https://pypi.org/project/baobab-scryfall-api-caller/) — client d’accès à l’API Scryfall aligné Baobab.
-- **Interdites dans ce package** : modules collection, produits scellés, moteur de règles, API web ou front-end (pas de couplage UI / transport).
+### Autorisées
+
+- **Runtime** : [`baobab-scryfall-api-caller`](https://pypi.org/project/baobab-scryfall-api-caller/) (≥ 1, &lt; 2) — client Scryfall aligné Baobab, optionnel pour **obtenir** les JSON ; l’import catalogue fonctionne sur des `Mapping` fournis par ailleurs.
+- **Python** : 3.11+ (voir `pyproject.toml`).
+
+### Interdites dans ce package
+
+Ne pas introduire de dépendances vers : modules **collection** ou inventaire, **produits scellés**, **moteur de règles**, **API web** ou **front-end**. Le catalogue reste indépendant du protocole et de l’UI.
+
+## Architecture (vue rapide)
+
+Couches conceptuelles, du plus stable au plus orchestrateur :
+
+| Couche | Rôle |
+|--------|------|
+| **Domaine** (`baobab_mtg_catalog.domain`) | Entités et value objects ; aucune dépendance Scryfall brute. |
+| **Adaptateurs** (`baobab_mtg_catalog.adapters`) | JSON Scryfall (`Mapping`) → entités domaine ; validation / normalisation. |
+| **Repositories** (`baobab_mtg_catalog.repositories`) | Contrats de persistance + impl. in-memory ; accès simple par id / clés naturelles. |
+| **Services** (`baobab_mtg_catalog.services`) | Import idempotent, requêtes filtrées, services de lecture par entité. |
+| **Façades** (`baobab_mtg_catalog.facades`) | `MtgCatalogFacade` : point d’entrée unique pour les autres briques Baobab. |
+
+Les **données Scryfall brutes** ne traversent pas le domaine : elles sont converties par les adaptateurs, puis stockées et relues comme types métier.
+
+## Carte logique, impression et extension
+
+| Concept | Type domaine | Identité (objet) | Clé naturelle (import / fusion) | Contient typiquement |
+|---------|----------------|------------------|----------------------------------|----------------------|
+| **Carte logique (Oracle)** | `CardDefinition` | `CardDefinitionIdentifier` | `OracleId` | Nom, mana, texte Oracle, couleurs, faces, etc. **Pas** de set / collector / langue printing. |
+| **Impression** | `CardPrinting` | `CardPrintingIdentifier` | `ScryfallId` carte si présent, sinon `(SetId, collector_number, language)` | Lien vers définition + set, rareté, finitions, langue, ids externes optionnels. |
+| **Extension (set)** | `Set` | `SetId` | `SetCode` | Nom produit, dates, type d’extension, compteurs, etc. |
 
 ## Prérequis
 
@@ -37,6 +73,18 @@ bandit -r src/baobab_mtg_catalog
 
 La couverture est mesurée avec seuil minimal **90 %** ; les artefacts sont générés sous `docs/tests/coverage/` (voir `pyproject.toml`).
 
+## API publique du package racine
+
+Le module `baobab_mtg_catalog` expose volontairement peu de symboles pour une intégration simple :
+
+| Symbole | Description |
+|---------|-------------|
+| `__version__` | Version du distribution package (`importlib.metadata`). |
+| `BaobabMtgCatalogException` | Exception racine du projet. |
+| `MtgCatalogFacade` | Façade catalogue (import + consultation). |
+
+Le reste de l’API stable est **par sous-package** : `domain`, `repositories`, `adapters`, `services`, `exceptions`, `facades`. Les tests `tests/baobab_mtg_catalog/test_readme_documentation_examples.py` gardent un alignement minimal avec les exemples ci-dessous.
+
 ## Utilisation minimale
 
 ```python
@@ -45,8 +93,6 @@ from baobab_mtg_catalog import BaobabMtgCatalogException, MtgCatalogFacade, __ve
 print(__version__)
 
 facade = MtgCatalogFacade.in_memory()
-# facade.import_set_and_cards(set_payload, card_payloads)
-# facade.sets.get_by_code(...), facade.definitions.get_by_oracle_id(...), etc.
 
 raise BaobabMtgCatalogException("exemple d'erreur métier catalogue")
 ```
@@ -55,26 +101,178 @@ raise BaobabMtgCatalogException("exemple d'erreur métier catalogue")
 
 Point d’entrée stable pour les autres briques Baobab : import idempotent, consultation par entité et accès aux filtres combinés sans assembler manuellement repositories et services.
 
-- **`MtgCatalogFacade.in_memory()`** : repositories in-memory vides, prêts pour tests ou prototypage.
-- **Injection** : `MtgCatalogFacade(set_repository=..., definition_repository=..., printing_repository=...)` pour brancher une persistance partagée.
-- **`sets` / `definitions` / `printings`** : `SetQueryService`, `CardDefinitionQueryService`, `CardPrintingQueryService` (get, listes par set ou par carte logique, `find` / `find_in_set` pour les critères métier).
-- **`catalog`** : `CatalogQueryService` inchangé (filtres `Catalog*Filter`).
-- **`importer`** : `CatalogImportService` ; **`import_set_and_cards`** sur la façade est un raccourci équivalent.
+- **`MtgCatalogFacade.in_memory()`** : repositories in-memory vides (tests, prototypage).
+- **Injection** : `MtgCatalogFacade(set_repository=..., definition_repository=..., printing_repository=...)` pour une persistance partagée.
+- **`sets` / `definitions` / `printings`** : services de lecture métier (`SetQueryService`, `CardDefinitionQueryService`, `CardPrintingQueryService`).
+- **`catalog`** : `CatalogQueryService` et filtres `CatalogSetFilter`, `CatalogDefinitionFilter`, `CatalogPrintingFilter`.
+- **`importer`** : `CatalogImportService` ; **`import_set_and_cards`** sur la façade en est le raccourci.
+
+## Exemple : adapter des payloads Scryfall
+
+Les adaptateurs attendent des objets **similaires au JSON Scryfall** (`Mapping[str, Any]`). Les **UUID métier** (`SetId`, `CardDefinitionIdentifier`, `CardPrintingIdentifier`) sont fournis par l’appelant (souvent issus de la persistance ou générés avant premier enregistrement).
+
+```python
+from baobab_mtg_catalog.adapters.scryfall import (
+    ScryfallCardDefinitionAdapter,
+    ScryfallCardPrintingAdapter,
+    ScryfallSetAdapter,
+)
+from baobab_mtg_catalog.domain import (
+    CardDefinitionIdentifier,
+    CardPrintingIdentifier,
+    SetId,
+)
+
+set_payload = {
+    "object": "set",
+    "id": "11111111-1111-4111-8111-111111111111",
+    "code": "lea",
+    "name": "Limited Edition Alpha",
+    "set_type": "core",
+    "released_at": "1993-08-05",
+    "digital": False,
+    "foil_only": False,
+}
+
+card_payload = {
+    "object": "card",
+    "id": "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+    "oracle_id": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+    "multiverse_id": 600,
+    "name": "Lightning Bolt",
+    "mana_cost": "{R}",
+    "cmc": 1.0,
+    "type_line": "Instant",
+    "oracle_text": "Lightning Bolt deals 3 damage to any target.",
+    "colors": ["R"],
+    "color_identity": ["R"],
+    "lang": "en",
+    "rarity": "common",
+    "finishes": ["nonfoil"],
+    "collector_number": "116",
+    "set": "lea",
+}
+
+set_id = SetId.parse("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
+st = ScryfallSetAdapter.to_set(set_payload, set_id=set_id)
+
+definition_id = CardDefinitionIdentifier.parse("bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb")
+definition = ScryfallCardDefinitionAdapter.to_card_definition(
+    card_payload,
+    card_definition_id=definition_id,
+)
+
+printing_id = CardPrintingIdentifier.parse("cccccccc-cccc-4ccc-8ccc-cccccccccccc")
+printing = ScryfallCardPrintingAdapter.to_card_printing(
+    card_payload,
+    card_printing_id=printing_id,
+    card_definition_id=definition.card_definition_id,
+    set_id=st.set_id,
+)
+```
+
+En pratique, on enchaîne souvent cet enchaînement via **`CatalogImportService`** ou **`MtgCatalogFacade.import_set_and_cards`**, qui résolvent les ids métier de façon **idempotente** (voir section suivante).
+
+## Exemple : import idempotent (façade)
+
+Le service d’import réutilise les adaptateurs et **fusionne** par clés naturelles (`SetCode`, `OracleId`, id Scryfall carte ou triplet set/collector/langue). Réimporter le même lot met à jour le contenu **sans dupliquer** les entités métier lorsque les clés correspondent.
+
+```python
+from baobab_mtg_catalog import MtgCatalogFacade
+
+facade = MtgCatalogFacade.in_memory()
+
+set_payload = {
+    "object": "set",
+    "id": "11111111-1111-4111-8111-111111111111",
+    "code": "lea",
+    "name": "Limited Edition Alpha",
+    "set_type": "core",
+    "released_at": "1993-08-05",
+    "digital": False,
+    "foil_only": False,
+}
+
+lightning = {
+    "object": "card",
+    "id": "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
+    "oracle_id": "eeeeeeee-eeee-4eee-8eee-eeeeeeeeeeee",
+    "multiverse_id": 600,
+    "name": "Lightning Bolt",
+    "mana_cost": "{R}",
+    "cmc": 1.0,
+    "type_line": "Instant",
+    "oracle_text": "Lightning Bolt deals 3 damage to any target.",
+    "colors": ["R"],
+    "color_identity": ["R"],
+    "lang": "en",
+    "rarity": "common",
+    "finishes": ["nonfoil"],
+    "collector_number": "116",
+    "artist": "Christopher Rush",
+    "set": "lea",
+}
+
+bears = {
+    "object": "card",
+    "id": "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa",
+    "oracle_id": "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb",
+    "multiverse_id": 601,
+    "name": "Grizzly Bears",
+    "mana_cost": "{1}{G}",
+    "cmc": 2.0,
+    "type_line": "Creature — Bear",
+    "oracle_text": "",
+    "colors": ["G"],
+    "color_identity": ["G"],
+    "lang": "en",
+    "rarity": "common",
+    "finishes": ["nonfoil"],
+    "collector_number": "5",
+    "set": "lea",
+}
+
+result = facade.import_set_and_cards(set_payload, [lightning, bears])
+assert result.cards_imported == 2
+
+# Second import : idempotent (mêmes clés naturelles)
+again = facade.import_set_and_cards(set_payload, [lightning, bears])
+assert again.cards_imported == 2
+```
+
+## Exemple : consulter le catalogue
+
+En reprenant les dictionnaires `set_payload`, `lightning` et `bears` de la section **import idempotent** :
 
 ```python
 from baobab_mtg_catalog import MtgCatalogFacade
 from baobab_mtg_catalog.domain import SetCode
+from baobab_mtg_catalog.services import CatalogDefinitionFilter, CatalogPrintingFilter
 
 facade = MtgCatalogFacade.in_memory()
-# Importer des Mapping JSON Scryfall via facade.import_set_and_cards(...)
+facade.import_set_and_cards(set_payload, [lightning, bears])
+
 st = facade.sets.get_by_code(SetCode.parse("lea"))
-defs = facade.definitions.list_for_set(st.set_id)
-prints = facade.printings.list_for_set(st.set_id)
+definitions_in_set = facade.definitions.list_for_set(st.set_id)
+printings_in_set = facade.printings.list_for_set(st.set_id)
+
+bolts_in_lea = facade.printings.find_in_set(
+    st.set_id,
+    CatalogPrintingFilter(
+        definition=CatalogDefinitionFilter(normalized_name_contains="bolt"),
+    ),
+)
+
+creatures = facade.catalog.find_definitions(
+    CatalogDefinitionFilter(type_line_contains="creature"),
+)
 ```
+
+Les critères non nuls des `Catalog*Filter` se combinent par un **ET** logique ; l’ordre des résultats est **déterministe** (tri par identifiant métier). La **légalité de format** n’est pas portée par `CardDefinition` dans cette version : aucun filtre de légalité n’est exposé.
 
 ## Objets de valeur du domaine
 
-Les types partagés (couleurs, langue, rareté, finition, codes set / collector, coût de mana, ligne de types, identifiants externes, légalité de format) vivent sous `baobab_mtg_catalog.domain` et `baobab_mtg_catalog.domain.value_objects`. Ils sont **indépendants des DTO Scryfall** : les adaptateurs doivent parser puis construire ces types.
+Les types partagés (couleurs, langue, rareté, finition, codes set / collector, coût de mana, ligne de types, identifiants externes, etc.) vivent sous `baobab_mtg_catalog.domain` et `baobab_mtg_catalog.domain.value_objects`.
 
 ```python
 from baobab_mtg_catalog.domain import Color, ColorIdentity, ManaCost, SetCode
@@ -85,11 +283,11 @@ cost = ManaCost.parse("{2}{G}")
 code = SetCode.parse("mh3")
 ```
 
-Les erreurs de validation lèvent des sous-classes de `InvalidDomainValueError` (elle-même sous-classe de `BaobabMtgCatalogException`), par exemple `InvalidManaCostError`, `InvalidSetCodeError`.
+Les erreurs de validation lèvent des sous-classes de `InvalidDomainValueError` (sous-classe de `BaobabMtgCatalogException`).
 
 ## Entité `CardDefinition` (carte logique)
 
-La **carte Oracle** (indépendante d’une impression précise) est modélisée par `CardDefinition` avec des `CardFace` (mono ou multi-face). L’**identité objet** repose sur `CardDefinitionIdentifier` ; la **clé naturelle** pour fusionner un import est `OracleId` (`natural_key()`). Aucun attribut de printing (set, collector number, finition, langue) n’appartient à ce modèle.
+La **carte Oracle** est modélisée par `CardDefinition` avec des `CardFace` (mono ou multi-face). Voir le tableau [Carte logique, impression et extension](#carte-logique-impression-et-extension).
 
 ```python
 from baobab_mtg_catalog.domain import (
@@ -135,7 +333,7 @@ assert card.natural_key() == card.oracle_id
 
 ## Entité `CardPrinting` (impression)
 
-Une **impression** relie une `CardDefinition` à un `Set` (références par identifiants métier), avec langue, numéro de collection, rareté, finitions et métadonnées optionnelles (artiste, URIs d’image, date de sortie, ids externes). L’**identité objet** repose sur `CardPrintingIdentifier` ; la **clé naturelle** pour l’import idempotent privilégie `scryfall_printing_id` s’il est présent, sinon le triplet `(set_id, collector_number, language)`.
+Voir le tableau [Carte logique, impression et extension](#carte-logique-impression-et-extension).
 
 ```python
 from baobab_mtg_catalog.domain import (
@@ -171,8 +369,6 @@ assert isinstance(printing.natural_key(), ScryfallId)
 
 ## Entité `Set` (extension)
 
-Une extension catalogue est modélisée par `Set` (`baobab_mtg_catalog.domain`). L’**identité objet** repose sur `SetId` (UUID métier) ; la **clé naturelle** pour fusionner un réimport sans doublon est le `SetCode` (`natural_key()`).
-
 ```python
 from datetime import date
 
@@ -190,25 +386,33 @@ st = Set(
 assert st.natural_key().value == "ONE"
 ```
 
-## Consultation filtrée (requêtes métier)
+## Consultation filtrée (`CatalogQueryService`)
 
-`CatalogQueryService` (`baobab_mtg_catalog.services`) parcourt les repositories (typiquement in-memory) et applique des filtres immuables : `CatalogSetFilter`, `CatalogDefinitionFilter`, `CatalogPrintingFilter`. Les critères renseignés sont combinés par un **ET** ; les sous-chaînes (`name_contains`, `type_line_contains`, etc.) ignorent la casse après normalisation. Les impressions peuvent restreindre la définition liée via `CatalogPrintingFilter.definition`. La légalité de format n’est pas portée par `CardDefinition` : aucun filtre de légalité n’est proposé.
+Utilisable via **`facade.catalog`** ou en instanciant le service avec les trois repositories. Filtres : `CatalogSetFilter`, `CatalogDefinitionFilter`, `CatalogPrintingFilter`.
 
 ```python
 from baobab_mtg_catalog.services import (
     CatalogDefinitionFilter,
     CatalogPrintingFilter,
     CatalogQueryService,
-    CatalogSetFilter,
 )
 
-# q = CatalogQueryService(set_repository=..., definition_repository=..., printing_repository=...)
-# q.find_printings(CatalogPrintingFilter(set_code=..., definition=CatalogDefinitionFilter(...)))
+# q = CatalogQueryService(
+#     set_repository=...,
+#     definition_repository=...,
+#     printing_repository=...,
+# )
+# q.find_printings(
+#     CatalogPrintingFilter(
+#         set_code=SetCode.parse("lea"),
+#         definition=CatalogDefinitionFilter(any_of_colors=frozenset({Color.RED})),
+#     )
+# )
 ```
 
-## Import catalogue idempotent (Scryfall → référentiel)
+## Import catalogue (service bas niveau)
 
-Le service `CatalogImportService` (`baobab_mtg_catalog.services`) enchaîne les adaptateurs Scryfall et les repositories : résolution des `SetId` / `CardDefinitionIdentifier` / `CardPrintingIdentifier` par clés naturelles (`SetCode`, `OracleId`, id Scryfall carte ou triplet set/collector/langue), `upsert` systématique et contrôles de cohérence (code set du lot vs champ `set` de la carte, alignement `scryfall_set_id`, lien printing ↔ définition). Aucun appel HTTP : les `Mapping` sont fournis par l’appelant (fichiers, cache, client existant).
+Équivalent de la façade pour qui compose déjà les repositories :
 
 ```python
 from baobab_mtg_catalog.repositories import (
@@ -223,13 +427,12 @@ svc = CatalogImportService(
     definition_repository=InMemoryCardDefinitionRepository(),
     printing_repository=InMemoryCardPrintingRepository(),
 )
-# set_payload et card_payloads : objets JSON Scryfall typiques (champs attendus par les adaptateurs).
 result = svc.import_set_and_cards(set_payload, card_payloads)
 ```
 
-## Repositories in-memory (référentiel local)
+## Repositories in-memory
 
-Les contrats de persistance vivent sous `baobab_mtg_catalog.repositories` : `upsert` idempotent par identifiant métier, index sur les clés naturelles (`SetCode`, `OracleId`, `CardPrinting.natural_key()`), lectures simples (`get_by_id`, `get_by_code`, `get_by_oracle_id`, `get_by_scryfall_printing_id`, `list_by_set_id`, etc.) et listes ordonnées de façon déterministe. Les absences lèvent `SetNotFoundError`, `CardDefinitionNotFoundError` ou `CardPrintingNotFoundError` ; les collisions d’unicité lèvent `RepositoryEntityConflictError`.
+Contrats sous `baobab_mtg_catalog.repositories` : `upsert` idempotent, index sur clés naturelles, erreurs `SetNotFoundError`, `CardDefinitionNotFoundError`, `CardPrintingNotFoundError`, `RepositoryEntityConflictError`.
 
 ```python
 from baobab_mtg_catalog.repositories import InMemorySetRepository
@@ -239,9 +442,7 @@ repo.upsert(st)
 assert repo.get_by_code(st.code) == st
 ```
 
-## Adaptateurs Scryfall (normalisation)
-
-Les objets JSON Scryfall (`Mapping[str, Any]`, typiquement issus de `baobab-scryfall-api-caller` ou d’un parseur JSON) sont convertis en entités domaine sous `baobab_mtg_catalog.adapters` : `ScryfallSetAdapter`, `ScryfallCardDefinitionAdapter`, `ScryfallCardPrintingAdapter`. Les **UUID métier** (`SetId`, `CardDefinitionIdentifier`, `CardPrintingIdentifier`) restent la responsabilité de l’appelant (persistance, résolution idempotente via `natural_key()`).
+## Adaptateurs Scryfall (erreurs)
 
 - `InvalidPayloadError` : structure minimale absente ou types JSON incorrects.
 - `NormalizationError` : valeur Scryfall ambiguë ou incohérente après normalisation.
@@ -251,6 +452,7 @@ Les objets JSON Scryfall (`Mapping[str, Any]`, typiquement issus de `baobab-scry
 
 - Spécifications : `docs/001_specifications.md`
 - Contraintes de développement : `docs/000_dev_constraints.md`
+- Checklist audit **v1.0.0** : `docs/v1.0.0_release_readiness_checklist.md`
 - Journal : `docs/dev_diary.md`
 - Changelog : `CHANGELOG.md`
 
@@ -258,7 +460,7 @@ Les objets JSON Scryfall (`Mapping[str, Any]`, typiquement issus de `baobab-scry
 
 - Branches de fonctionnalité : `feature/nom` (kebab-case).
 - Commits : [Conventional Commits](https://www.conventionalcommits.org/).
-- Respecter les contraintes `docs/000_dev_constraints.md` (structure `src/`, tests miroir, une classe par fichier, types et docstrings publics, outillage black / pylint / mypy / flake8 / bandit).
+- Respecter les contraintes `docs/000_dev_constraints.md`.
 
 ## Licence
 

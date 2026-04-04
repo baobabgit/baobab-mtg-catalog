@@ -6,6 +6,19 @@ Les entrées sont classées par **date décroissante** (les plus récentes en pr
 
 ## 2026-04-04
 
+### Feature 11 — Documentation, exemples et readiness v1.0.0
+
+#### Modifications
+
+- README : description projet, rôle écosystème Baobab, dépendances, architecture en couches, tableau `CardDefinition` / `CardPrinting` / `Set`, exemples complets (adaptateurs, import idempotent, consultation), section exports racine.
+- `docs/v1.0.0_release_readiness_checklist.md` ; tests `test_readme_documentation_examples.py`.
+- Version **0.11.0** ; classifier **Beta** dans `pyproject.toml`.
+
+#### Décisions d'architecture
+
+- **Surface publique racine volontairement minimale** : `__version__`, `BaobabMtgCatalogException`, `MtgCatalogFacade` ; le reste documenté par sous-packages pour limiter les engagements implicites avant v1.0.0.
+- **Non-régression doc** : les tests réutilisent les payloads partagés `scryfall_json_fixtures` pour garantir que les parcours « README-like » restent exécutables sans dupliquer des dizaines de lignes JSON dans les tests.
+
 ### Feature 10 — Services de consultation et façade publique
 
 #### Modifications

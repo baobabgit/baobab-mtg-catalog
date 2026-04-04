@@ -5,6 +5,18 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.11.0] - 2026-04-04
+
+### Added
+
+- Documentation : README enrichi (rôle Baobab, architecture, tableau des entités, exemples adaptateurs / import idempotent / consultation, API publique racine).
+- Checklist interne audit v1.0.0 : `docs/v1.0.0_release_readiness_checklist.md`.
+- Tests de non-régression `test_readme_documentation_examples.py` alignés sur les parcours documentés.
+
+### Changed
+
+- Classifier PyPI `Development Status :: 4 - Beta` (préparation release stable).
+
 ## [0.10.0] - 2026-04-04
 
 ### Added
