@@ -5,6 +5,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.7.0] - 2026-04-04
+
+### Added
+
+- Interfaces `SetRepository`, `CardDefinitionRepository`, `CardPrintingRepository` et implémentations `InMemorySetRepository`, `InMemoryCardDefinitionRepository`, `InMemoryCardPrintingRepository` (`repositories/`, `repositories/in_memory/`).
+- Exceptions `SetNotFoundError`, `CardDefinitionNotFoundError`, `CardPrintingNotFoundError`, `RepositoryEntityConflictError` pour la consultation référentiel et les violations d’unicité.
+- Tests unitaires sous `tests/baobab_mtg_catalog/repositories/`.
+
 ## [0.6.0] - 2026-04-04
 
 ### Added

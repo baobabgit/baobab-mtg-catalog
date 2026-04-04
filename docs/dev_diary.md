@@ -6,6 +6,21 @@ Les entrées sont classées par **date décroissante** (les plus récentes en pr
 
 ## 2026-04-04
 
+### Feature 07 — Repositories in-memory du référentiel
+
+#### Modifications
+
+- Package `repositories` : ABC `SetRepository`, `CardDefinitionRepository`, `CardPrintingRepository` ; implémentations `InMemory*` avec index par id métier, clés naturelles et (le cas échéant) ids Scryfall.
+- Exceptions `SetNotFoundError`, `CardDefinitionNotFoundError`, `CardPrintingNotFoundError`, `RepositoryEntityConflictError`.
+- Tests miroir `tests/baobab_mtg_catalog/repositories/in_memory/`.
+- Version **0.7.0**.
+
+#### Décisions d’architecture
+
+- **Pas de moteur de recherche** : filtres limités (`list_by_normalized_name` en égalité exacte, `list_by_set_id`, `list_by_set_and_collector`) ; le tri est par id métier pour un ordre stable.
+- **Idempotence stockage** : `upsert` remplace l’entité de même id métier et réindexe code / oracle / clé naturelle printing (y compris retrait des anciens index lors d’une correction).
+- **Unicité** : un `SetCode` et un `scryfall_set_id` (si présent) par `SetId` ; un `OracleId` par `CardDefinitionIdentifier` ; une clé naturelle printing (`ScryfallId` ou triplet set/collector/langue) par `CardPrintingIdentifier`.
+
 ### Feature 06 — Adaptateurs de normalisation Scryfall
 
 #### Modifications
