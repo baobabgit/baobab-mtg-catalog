@@ -5,6 +5,15 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.8.0] - 2026-04-04
+
+### Added
+
+- Service `CatalogImportService` (`services/catalog_import_service.py`) : import idempotent de payloads Scryfall normalisés (`Mapping`) vers les repositories, sans accès réseau.
+- DTO `CatalogImportBatchResult` pour le lot set + cartes.
+- Exceptions `CatalogImportInconsistencyError`, `CatalogImportSetScryfallMismatchError`, `CatalogImportBatchSetMismatchError`, `CatalogImportPrintingDefinitionMismatchError`.
+- Tests sous `tests/baobab_mtg_catalog/services/` (scénarios nominal, réimport, mise à jour partielle, incohérences, clé locale sans `id` carte).
+
 ## [0.7.0] - 2026-04-04
 
 ### Added
