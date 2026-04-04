@@ -6,6 +6,22 @@ Les entrées sont classées par **date décroissante** (les plus récentes en pr
 
 ## 2026-04-04
 
+### Feature 03 — Modèle domaine `Set`
+
+#### Modifications
+
+- Package `domain/sets` : entité immuable `Set`, `SetId` (UUID métier), `SetType` (`StrEnum`).
+- Exceptions `InvalidSetError`, `InvalidSetIdError`, `InvalidSetTypeError`.
+- Réexport `Set`, `SetId`, `SetType` depuis `baobab_mtg_catalog.domain`.
+- Tests miroir sous `tests/.../domain/sets/`.
+- Version **0.3.0**.
+
+#### Décisions d’architecture
+
+- **Identité d’entité** : égalité et hachage basés uniquement sur `SetId` (UUID métier attribué par la couche application / persistance).
+- **Idempotence d’import** : clé naturelle `natural_key()` = `SetCode` ; corrélation optionnelle via `scryfall_set_id` pour les adaptateurs, sans coupler l’entité au JSON Scryfall.
+- **Champs optionnels** : `card_count`, `parent_set_code`, `block_code`, drapeaux `digital_only` / `foil_only`, sans logique d’import dans l’entité.
+
 ### Feature 02 — Objets de valeur domaine partagés
 
 #### Modifications

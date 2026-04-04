@@ -5,6 +5,14 @@ Toutes les modifications notables de ce projet seront documentées dans ce fichi
 Le format s’inspire de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/)
 et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [0.3.0] - 2026-04-04
+
+### Added
+
+- Entité domaine `Set` (`domain/sets`) avec `SetId`, `SetType`, validations métier et corrélation optionnelle `scryfall_set_id`.
+- Exceptions `InvalidSetError`, `InvalidSetIdError`, `InvalidSetTypeError`.
+- Réexport depuis `baobab_mtg_catalog.domain`.
+
 ## [0.2.0] - 2026-04-04
 
 ### Added
