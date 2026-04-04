@@ -32,6 +32,9 @@ from baobab_mtg_catalog.exceptions.invalid_oracle_id_error import InvalidOracleI
 from baobab_mtg_catalog.exceptions.invalid_rarity_error import InvalidRarityError
 from baobab_mtg_catalog.exceptions.invalid_scryfall_id_error import InvalidScryfallIdError
 from baobab_mtg_catalog.exceptions.invalid_set_code_error import InvalidSetCodeError
+from baobab_mtg_catalog.exceptions.invalid_set_error import InvalidSetError
+from baobab_mtg_catalog.exceptions.invalid_set_id_error import InvalidSetIdError
+from baobab_mtg_catalog.exceptions.invalid_set_type_error import InvalidSetTypeError
 
 __all__: list[str] = [
     "BaobabMtgCatalogException",
@@ -50,4 +53,7 @@ __all__: list[str] = [
     "InvalidRarityError",
     "InvalidScryfallIdError",
     "InvalidSetCodeError",
+    "InvalidSetError",
+    "InvalidSetIdError",
+    "InvalidSetTypeError",
 ]

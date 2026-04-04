@@ -62,6 +62,27 @@ code = SetCode.parse("mh3")
 
 Les erreurs de validation lèvent des sous-classes de `InvalidDomainValueError` (elle-même sous-classe de `BaobabMtgCatalogException`), par exemple `InvalidManaCostError`, `InvalidSetCodeError`.
 
+## Entité `Set` (extension)
+
+Une extension catalogue est modélisée par `Set` (`baobab_mtg_catalog.domain`). L’**identité objet** repose sur `SetId` (UUID métier) ; la **clé naturelle** pour fusionner un réimport sans doublon est le `SetCode` (`natural_key()`).
+
+```python
+from datetime import date
+
+from baobab_mtg_catalog.domain import Set, SetCode, SetId, SetType
+
+st = Set(
+    set_id=SetId.parse("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"),
+    code=SetCode.parse("one"),
+    name="Phyrexia: All Will Be One",
+    release_date=date(2023, 2, 3),
+    set_type=SetType.EXPANSION,
+    card_count=271,
+    digital_only=False,
+)
+assert st.natural_key().value == "ONE"
+```
+
 ## Documentation projet
 
 - Spécifications : `docs/001_specifications.md`
