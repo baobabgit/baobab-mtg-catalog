@@ -108,6 +108,42 @@ card = CardDefinition(
 assert card.natural_key() == card.oracle_id
 ```
 
+## Entité `CardPrinting` (impression)
+
+Une **impression** relie une `CardDefinition` à un `Set` (références par identifiants métier), avec langue, numéro de collection, rareté, finitions et métadonnées optionnelles (artiste, URIs d’image, date de sortie, ids externes). L’**identité objet** repose sur `CardPrintingIdentifier` ; la **clé naturelle** pour l’import idempotent privilégie `scryfall_printing_id` s’il est présent, sinon le triplet `(set_id, collector_number, language)`.
+
+```python
+from baobab_mtg_catalog.domain import (
+    CardDefinitionIdentifier,
+    CardPrinting,
+    CardPrintingIdentifier,
+    CollectorNumber,
+    Finish,
+    Language,
+    Rarity,
+    ScryfallId,
+    SetId,
+)
+
+printing = CardPrinting(
+    card_printing_id=CardPrintingIdentifier.parse(
+        "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa"
+    ),
+    card_definition_id=CardDefinitionIdentifier.parse(
+        "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb"
+    ),
+    set_id=SetId.parse("cccccccc-cccc-4ccc-8ccc-cccccccccccc"),
+    collector_number=CollectorNumber.parse("123"),
+    language=Language.EN,
+    rarity=Rarity.RARE,
+    finishes=frozenset({Finish.NONFOIL, Finish.FOIL}),
+    scryfall_printing_id=ScryfallId.parse(
+        "dddddddd-dddd-4ddd-8ddd-dddddddddddd"
+    ),
+)
+assert isinstance(printing.natural_key(), ScryfallId)
+```
+
 ## Entité `Set` (extension)
 
 Une extension catalogue est modélisée par `Set` (`baobab_mtg_catalog.domain`). L’**identité objet** repose sur `SetId` (UUID métier) ; la **clé naturelle** pour fusionner un réimport sans doublon est le `SetCode` (`natural_key()`).

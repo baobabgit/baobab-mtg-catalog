@@ -10,6 +10,12 @@ from baobab_mtg_catalog.exceptions.invalid_card_definition_identifier_error impo
     InvalidCardDefinitionIdentifierError,
 )
 from baobab_mtg_catalog.exceptions.invalid_card_face_error import InvalidCardFaceError
+from baobab_mtg_catalog.exceptions.invalid_card_printing_error import (
+    InvalidCardPrintingError,
+)
+from baobab_mtg_catalog.exceptions.invalid_card_printing_identifier_error import (
+    InvalidCardPrintingIdentifierError,
+)
 from baobab_mtg_catalog.exceptions.invalid_card_type_line_error import (
     InvalidCardTypeLineError,
 )
@@ -48,6 +54,8 @@ __all__: list[str] = [
     "InvalidCardDefinitionError",
     "InvalidCardDefinitionIdentifierError",
     "InvalidCardFaceError",
+    "InvalidCardPrintingError",
+    "InvalidCardPrintingIdentifierError",
     "InvalidCardTypeLineError",
     "InvalidCollectorNumberError",
     "InvalidColorError",

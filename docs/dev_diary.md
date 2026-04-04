@@ -6,6 +6,23 @@ Les entrées sont classées par **date décroissante** (les plus récentes en pr
 
 ## 2026-04-04
 
+### Feature 05 — Modèle domaine `CardPrinting`
+
+#### Modifications
+
+- Package `domain/card_printings` : `CardPrinting`, `CardPrintingIdentifier`, `PrintingImageUris`, `validation_utils` (URIs http(s)).
+- Exceptions `InvalidCardPrintingError`, `InvalidCardPrintingIdentifierError`.
+- Réexport depuis `baobab_mtg_catalog.domain`.
+- Tests miroir sous `tests/.../domain/card_printings/`.
+- Version **0.5.0**.
+
+#### Décisions d’architecture
+
+- **Identité d’entité** : `__eq__` / `__hash__` sur `CardPrintingIdentifier` (UUID métier persistance).
+- **Idempotence** : `natural_key()` retourne `ScryfallId` si `scryfall_printing_id` est défini ; sinon `(set_id, collector_number, language)` pour les sources sans UUID fournisseur stable.
+- **Relations** : références par `CardDefinitionIdentifier` et `SetId` uniquement (pas d’agrégat chargé) pour limiter le couplage et les cycles.
+- **Finitions** : `frozenset[Finish]` non vide ; pas de logique inventaire ni de consultation référentiel dans l’entité.
+
 ### Feature 04 — Modèle domaine `CardDefinition`
 
 #### Modifications
